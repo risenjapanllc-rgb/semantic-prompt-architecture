@@ -5,3 +5,4 @@ export * from "./semantic-schema.js";
 export * from "./canonical-state.js";
 export * from "./translator.js";
 export * from "./prompt-renderer.js";
+export * from "./domains/visual-testimony/index.js";
