@@ -382,3 +382,198 @@ The final prompt is a generated artifact.
 It is not the source of truth.
 
 Changing a Prompt Renderer must not require changing the underlying Semantic State.
+
+---
+
+## Unknown Handling
+
+Unknown is an explicit semantic state.
+
+Missing information must not automatically be interpreted as permission for the system or AI model to invent a value.
+
+SPA distinguishes different forms of uncertainty.
+
+```ts
+export type UnknownReason =
+  | "unknown"
+  | "not_remembered"
+  | "not_observed"
+  | "not_applicable"
+  | "intentionally_unspecified";
+
+export type SemanticUnknown = {
+  field: string;
+  reason: UnknownReason;
+};
+```
+
+### Example
+
+```ts
+{
+  field: "weather",
+  reason: "not_remembered"
+}
+```
+
+This means that weather was not remembered.
+
+It does not mean:
+
+```text
+sunny
+cloudy
+rainy
+dramatic weather
+```
+
+and it does not authorize a Translator to choose one of those values.
+
+### Core Rules
+
+Unknown must remain Unknown unless new human-confirmed information changes it.
+
+A Canonicalizer must preserve Unknown.
+
+A Translator must not convert Unknown into an invented semantic fact.
+
+A Prompt Renderer must not silently fill Unknown fields.
+
+An AI model may require incidental generation of unspecified details, but those generated details must not be promoted back into Semantic State as confirmed truth.
+
+### Generated Detail Is Not Confirmed Meaning
+
+SPA distinguishes between:
+
+```text
+Confirmed Semantic State
+```
+
+and:
+
+```text
+Model-Generated Detail
+```
+
+Model-generated detail may appear in an output because generation requires a concrete result.
+
+That detail does not become part of the durable Semantic State unless it is explicitly accepted or confirmed through the application domain.
+
+### Principle
+
+Absence of information is not evidence of a specific value.
+
+Unknown is information.
+
+---
+
+## Versioning
+
+SPA versions semantic schemas independently from model-specific Translators and Prompt Renderers.
+
+The purpose of versioning is to allow AI integrations to evolve without invalidating durable Semantic State.
+
+```ts
+export type SpaVersionInfo = {
+  semanticSchemaVersion: string;
+
+  translatorVersion?: string;
+
+  rendererVersion?: string;
+
+  targetModel?: string;
+};
+```
+
+### Example
+
+```ts
+{
+  semanticSchemaVersion: "1.0.0",
+  translatorVersion: "openai-image-1.2.0",
+  rendererVersion: "openai-image-renderer-1.0.0",
+  targetModel: "example-image-model"
+}
+```
+
+### Independent Evolution
+
+The following components may evolve independently:
+
+```text
+Semantic Schema
+      |
+      +--> Translator A v1
+      |
+      +--> Translator A v2
+      |
+      +--> Translator B v1
+```
+
+A change to an AI model, Translator, or Prompt Renderer must not automatically require a change to Semantic State.
+
+### Semantic Schema Changes
+
+The Semantic Schema version should change when the meaning or structure of durable semantic data changes.
+
+Examples include:
+
+- adding a new semantic concept
+- changing the meaning of an existing field
+- changing compatibility rules between semantic values
+- changing the representation of Unknown
+- introducing a required semantic field
+
+Model-specific wording changes do not require a Semantic Schema version change.
+
+### Translator Changes
+
+Translator versions should change when model-specific translation behavior changes.
+
+Examples include:
+
+- improved wording for a target model
+- changed instruction ordering
+- new model-specific syntax
+- different weighting or emphasis
+- adaptation to a new model generation
+
+These changes must not silently alter the underlying semantic meaning.
+
+### Renderer Changes
+
+Prompt Renderer versions should change when final prompt representation changes without changing semantic meaning.
+
+### Reproducibility
+
+When practical, applications should record enough version information to identify how a model input was produced.
+
+Conceptually:
+
+```text
+Semantic State
++
+Semantic Schema Version
++
+Translator Version
++
+Renderer Version
++
+Target Model
+=
+Traceable Generation Context
+```
+
+This allows SPA applications to improve their AI integrations while preserving the original human-confirmed meaning.
+
+### Principle
+
+Semantic meaning should outlive individual AI models.
+
+Models change.
+
+Prompts change.
+
+Translators change.
+
+Human-confirmed Semantic State remains the durable asset.
