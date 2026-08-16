@@ -663,3 +663,15 @@ The project should be treated as evolving architecture rather than a finalized u
 > Meaning is durable.  
 > Domain expression is replaceable.  
 > Prompt wording is generated.
+
+
+## Developer Quickstart
+
+New to SPA?
+
+Start with:
+
+`docs/getting-started/010-domain-adapter-quickstart.md`
+
+The Quickstart explains the shortest path from Semantic Schema and Options to a conforming Domain Adapter and rendered prompt.
+
