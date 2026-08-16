@@ -157,3 +157,71 @@ It stores meaning, not prompt wording.
 Unknown information must remain explicitly represented as Unknown.
 
 Semantic State is the durable asset of SPA.
+
+---
+
+## Canonical State
+
+Canonical State is the normalized representation of Semantic State.
+
+Its purpose is to provide a stable semantic representation that Translators can consume without depending on UI labels or model-specific prompt wording.
+
+```ts
+export type CanonicalValue = {
+  id: string;
+  value: string;
+  sourceOptionIds: string[];
+};
+
+export type CanonicalState = {
+  domain: string;
+
+  categories: Record<
+    string,
+    CanonicalValue[]
+  >;
+
+  unknowns: string[];
+};
+```
+
+### Example
+
+```ts
+{
+  domain: "character_impression",
+
+  categories: {
+    face_impression: [
+      {
+        id: "refined",
+        value: "refined",
+        sourceOptionIds: [
+          "face-impression-refined"
+        ]
+      },
+      {
+        id: "gentle",
+        value: "gentle",
+        sourceOptionIds: [
+          "face-impression-gentle"
+        ]
+      }
+    ]
+  },
+
+  unknowns: [
+    "exact_eye_shape"
+  ]
+}
+```
+
+Canonical State normalizes meaning without adding new meaning.
+
+It must not infer information that the user did not provide or confirm.
+
+It must preserve Unknown as Unknown.
+
+It must remain independent from any specific AI model.
+
+Canonical State is the stable input contract for Translators.
