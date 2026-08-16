@@ -74,3 +74,9 @@ export type SemanticSchema = {
   fields: SemanticField[];
 };
 
+export type CanonicalSemanticState = {
+  domain: string;
+  values: Record<string, string[]>;
+  unknowns: SemanticUnknown[];
+};
+
