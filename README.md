@@ -675,3 +675,18 @@ Start with:
 
 The Quickstart explains the shortest path from Semantic Schema and Options to a conforming Domain Adapter and rendered prompt.
 
+
+### Copyable Starter Adapter
+
+After reading the Developer Quickstart, run the minimal example:
+
+`examples/meeting-preference/`
+
+From the repository root:
+
+~~~bash
+npx tsx examples/meeting-preference/run.ts
+~~~
+
+The example demonstrates the complete SPA path from semantic selection to rendered prompt without modifying SPA Core.
+
