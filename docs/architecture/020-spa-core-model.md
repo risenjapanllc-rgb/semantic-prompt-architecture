@@ -106,8 +106,6 @@ The selected Options are later used to construct Semantic State.
 
 ---
 
----
-
 ## Semantic State
 
 Semantic State is the model-independent source of truth.
