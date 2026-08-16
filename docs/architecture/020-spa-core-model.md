@@ -103,3 +103,59 @@ Option defines meaning.
 Selection records choice.
 
 The selected Options are later used to construct Semantic State.
+
+---
+
+---
+
+## Semantic State
+
+Semantic State is the model-independent source of truth.
+
+It represents the meaning selected or confirmed by the user without containing model-specific prompt instructions.
+
+```ts
+export type SemanticState = {
+  domain: string;
+
+  values: Record<
+    string,
+    string[]
+  >;
+
+  unknowns: string[];
+
+  metadata?: Record<
+    string,
+    unknown
+  >;
+};
+```
+
+### Example
+
+```ts
+{
+  domain: "character_impression",
+
+  values: {
+    face_impression: [
+      "refined",
+      "warm",
+      "gentle"
+    ]
+  },
+
+  unknowns: [
+    "exact_eye_shape"
+  ]
+}
+```
+
+Semantic State must remain independent from any specific AI model.
+
+It stores meaning, not prompt wording.
+
+Unknown information must remain explicitly represented as Unknown.
+
+Semantic State is the durable asset of SPA.
