@@ -1,5 +1,6 @@
 import type {
   SemanticSchema,
+  SemanticUnknown,
   SpaOption,
   SpaSelection,
   SelectionResolutionResult,
@@ -34,7 +35,8 @@ export function areIncompatible(
 export function resolveSelections(
   options: SpaOption[],
   selections: SpaSelection[],
-  schema?: SemanticSchema
+  schema?: SemanticSchema,
+  unknowns: SemanticUnknown[] = []
 ): SelectionResolutionResult {
   const optionMap = buildOptionMap(options);
   const issues: SelectionResolutionResult["issues"] = [];
@@ -166,6 +168,72 @@ export function resolveSelections(
               ? left.category
               : undefined,
           message: "Selected options are incompatible.",
+        });
+      }
+    }
+  }
+
+  if (schema) {
+    const fieldsById =
+      new Map(
+        schema.fields.map(
+          (field) => [
+            field.id,
+            field,
+          ]
+        )
+      );
+
+    for (const unknown of unknowns) {
+      const field =
+        fieldsById.get(
+          unknown.field
+        );
+
+      if (!field) {
+        issues.push({
+          type: "unknown_field",
+          optionIds: [],
+          category: unknown.field,
+          message:
+            "Unknown state references a field that does not exist in the active Semantic Schema.",
+        });
+
+        continue;
+      }
+
+      if (!field.unknownAllowed) {
+        issues.push({
+          type: "unknown_not_allowed",
+          optionIds: [],
+          category: field.category,
+          message:
+            "Unknown is not allowed for this semantic field.",
+        });
+      }
+
+      const conflictingOptions =
+        selectedOptions.filter(
+          (option) =>
+            validateOptionAgainstSchema(
+              schema,
+              option
+            ) &&
+            option.category ===
+              field.category
+        );
+
+      if (conflictingOptions.length > 0) {
+        issues.push({
+          type: "unknown_conflict",
+          optionIds:
+            conflictingOptions.map(
+              (option) =>
+                option.id
+            ),
+          category: field.category,
+          message:
+            "A semantic field cannot contain both a confirmed value and an Unknown state.",
         });
       }
     }

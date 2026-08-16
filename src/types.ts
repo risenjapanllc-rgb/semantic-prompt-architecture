@@ -38,6 +38,8 @@ export type ResolutionIssueType =
   | "incompatible_selection"
   | "missing_requirement"
   | "cardinality_conflict"
+  | "unknown_field"
+  | "unknown_not_allowed"
   | "unknown_conflict"
   | "ambiguous_selection";
 
