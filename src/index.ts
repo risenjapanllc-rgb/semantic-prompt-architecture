@@ -7,3 +7,4 @@ export * from "./translator.js";
 export * from "./prompt-renderer.js";
 export * from "./domains/visual-testimony/index.js";
 export * from "./domains/care-conversation/index.js";
+export * from "./conformance/index.js";
