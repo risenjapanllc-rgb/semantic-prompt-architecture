@@ -34,8 +34,10 @@ export type SemanticState = {
 
 export type ResolutionIssueType =
   | "unknown_option"
+  | "invalid_schema_option"
   | "incompatible_selection"
   | "missing_requirement"
+  | "cardinality_conflict"
   | "unknown_conflict"
   | "ambiguous_selection";
 

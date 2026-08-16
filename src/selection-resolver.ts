@@ -1,8 +1,14 @@
 import type {
+  SemanticSchema,
   SpaOption,
   SpaSelection,
   SelectionResolutionResult,
 } from "./types.js";
+
+import {
+  getSemanticFieldByCategory,
+  validateOptionAgainstSchema,
+} from "./semantic-schema.js";
 
 export function buildOptionMap(
   options: SpaOption[]
@@ -27,7 +33,8 @@ export function areIncompatible(
 
 export function resolveSelections(
   options: SpaOption[],
-  selections: SpaSelection[]
+  selections: SpaSelection[],
+  schema?: SemanticSchema
 ): SelectionResolutionResult {
   const optionMap = buildOptionMap(options);
   const issues: SelectionResolutionResult["issues"] = [];
@@ -56,6 +63,94 @@ export function resolveSelections(
         (option): option is SpaOption =>
           option !== undefined
       );
+
+  if (schema) {
+    for (const option of selectedOptions) {
+      if (
+        !validateOptionAgainstSchema(
+          schema,
+          option
+        )
+      ) {
+        issues.push({
+          type: "invalid_schema_option",
+          optionIds: [option.id],
+          category: option.category,
+          message:
+            "Selected option does not belong to the active Semantic Schema.",
+        });
+      }
+    }
+
+    const optionsByCategory =
+      new Map<string, SpaOption[]>();
+
+    for (const option of selectedOptions) {
+      if (
+        !validateOptionAgainstSchema(
+          schema,
+          option
+        )
+      ) {
+        continue;
+      }
+
+      const current =
+        optionsByCategory.get(
+          option.category
+        ) ?? [];
+
+      current.push(option);
+
+      optionsByCategory.set(
+        option.category,
+        current
+      );
+    }
+
+    for (
+      const [
+        category,
+        categoryOptions,
+      ] of optionsByCategory
+    ) {
+      const field =
+        getSemanticFieldByCategory(
+          schema,
+          category
+        );
+
+      if (!field) {
+        continue;
+      }
+
+      if (
+        field.cardinality === "single"
+      ) {
+        const semanticValues =
+          new Set(
+            categoryOptions.map(
+              (option) =>
+                option.semanticValue
+            )
+          );
+
+        if (semanticValues.size > 1) {
+          issues.push({
+            type: "cardinality_conflict",
+            optionIds:
+              categoryOptions.map(
+                (option) =>
+                  option.id
+              ),
+            category,
+            message:
+              "Multiple semantic values were selected for a single-value field.",
+          });
+        }
+      }
+    }
+  }
 
   for (let i = 0; i < selectedOptions.length; i += 1) {
     for (let j = i + 1; j < selectedOptions.length; j += 1) {
