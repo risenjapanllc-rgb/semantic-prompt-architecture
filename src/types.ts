@@ -51,3 +51,22 @@ export type SelectionResolutionResult = {
   issues: ResolutionIssue[];
   requiresConfirmation: boolean;
 };
+
+export type SemanticFieldCardinality =
+  | "single"
+  | "multiple";
+
+export type SemanticField = {
+  id: string;
+  category: string;
+  cardinality: SemanticFieldCardinality;
+  unknownAllowed: boolean;
+};
+
+export type SemanticSchema = {
+  id: string;
+  version: string;
+  domain: string;
+  fields: SemanticField[];
+};
+
