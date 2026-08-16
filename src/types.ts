@@ -80,3 +80,28 @@ export type CanonicalSemanticState = {
   unknowns: SemanticUnknown[];
 };
 
+export type PromptInstruction = {
+  field: string;
+  value: string;
+};
+
+export type PromptConstraint = {
+  field: string;
+  kind: "preserve_unknown";
+  reason: UnknownReason;
+};
+
+export type PromptIR = {
+  domain: string;
+  instructions: PromptInstruction[];
+  constraints: PromptConstraint[];
+};
+
+export type SpaTranslator = {
+  id: string;
+  version: string;
+  translate(
+    state: CanonicalSemanticState
+  ): PromptIR;
+};
+

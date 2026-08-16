@@ -3,3 +3,4 @@ export * from "./selection-resolver.js";
 export * from "./semantic-state.js";
 export * from "./semantic-schema.js";
 export * from "./canonical-state.js";
+export * from "./translator.js";
