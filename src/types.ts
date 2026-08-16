@@ -105,3 +105,17 @@ export type SpaTranslator = {
   ): PromptIR;
 };
 
+export type RenderedPrompt = {
+  rendererId: string;
+  rendererVersion: string;
+  text: string;
+};
+
+export type SpaPromptRenderer = {
+  id: string;
+  version: string;
+  render(
+    ir: PromptIR
+  ): RenderedPrompt;
+};
+
