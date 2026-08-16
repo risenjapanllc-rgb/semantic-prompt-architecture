@@ -225,3 +225,87 @@ It must preserve Unknown as Unknown.
 It must remain independent from any specific AI model.
 
 Canonical State is the stable input contract for Translators.
+
+---
+
+## Translator
+
+A Translator converts Canonical State into model-specific instructions.
+
+The Translator is the boundary between stable semantic meaning and model-dependent prompt representation.
+
+```ts
+export type PromptSection = {
+  id: string;
+  title: string;
+  priority: number;
+  instructions: string[];
+};
+
+export type SpaTranslator = {
+  modelFamily: string;
+  version: string;
+
+  translate(
+    state: CanonicalState
+  ): PromptSection[];
+};
+```
+
+### Example
+
+The same Canonical State:
+
+```ts
+{
+  domain: "character_impression",
+
+  categories: {
+    face_impression: [
+      {
+        id: "refined",
+        value: "refined",
+        sourceOptionIds: [
+          "face-impression-refined"
+        ]
+      }
+    ]
+  },
+
+  unknowns: []
+}
+```
+
+may be translated differently for different AI models.
+
+Conceptually:
+
+```text
+Canonical State
+      |
+      +--> Image Model A Translator
+      |        |
+      |        +--> model-specific visual instructions
+      |
+      +--> Image Model B Translator
+      |        |
+      |        +--> different model-specific instructions
+      |
+      +--> Language Model Translator
+               |
+               +--> language-model-specific instructions
+```
+
+The Translator may change as AI models change.
+
+Canonical State must not change merely because the target AI model changes.
+
+A Translator must not invent new semantic facts.
+
+A Translator may change wording, ordering, emphasis, and model-specific syntax only when necessary to communicate the existing meaning effectively.
+
+Unknown information must not be converted into invented detail.
+
+The Translator is replaceable.
+
+Semantic meaning is durable.
