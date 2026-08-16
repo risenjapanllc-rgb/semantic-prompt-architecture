@@ -309,3 +309,76 @@ Unknown information must not be converted into invented detail.
 The Translator is replaceable.
 
 Semantic meaning is durable.
+
+---
+
+## Prompt Renderer
+
+Prompt Renderer converts Prompt Sections produced by a Translator into the final model input.
+
+```ts
+export type PromptRenderer = {
+  render(
+    sections: PromptSection[]
+  ): string;
+};
+```
+
+The Prompt Renderer is responsible for presentation, not meaning.
+
+It may:
+
+- order Prompt Sections by priority
+- apply model-specific formatting
+- add required structural separators
+- remove unnecessary formatting duplication
+
+It must not:
+
+- invent new semantic facts
+- reinterpret the user's meaning
+- silently replace Unknown with assumptions
+- introduce domain knowledge that is absent from Canonical State
+- change the semantic intent of Translator output
+
+### Processing Flow
+
+```text
+Semantic State
+      |
+      v
+Canonical State
+      |
+      v
+Translator
+      |
+      v
+Prompt Sections
+      |
+      v
+Prompt Renderer
+      |
+      v
+Final Model Input
+      |
+      v
+AI Model
+```
+
+### Separation of Responsibilities
+
+Semantic State owns meaning.
+
+Canonical State owns normalization.
+
+Translator owns model-specific semantic translation.
+
+Prompt Renderer owns final prompt representation.
+
+AI Model owns generation.
+
+The final prompt is a generated artifact.
+
+It is not the source of truth.
+
+Changing a Prompt Renderer must not require changing the underlying Semantic State.
