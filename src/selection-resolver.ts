@@ -76,6 +76,30 @@ export function resolveSelections(
     }
   }
 
+  const selectedOptionIds =
+    new Set(
+      selectedOptions.map(
+        (option) => option.id
+      )
+    );
+
+  for (const option of selectedOptions) {
+    for (const requiredId of option.requires ?? []) {
+      if (!selectedOptionIds.has(requiredId)) {
+        issues.push({
+          type: "missing_requirement",
+          optionIds: [
+            option.id,
+            requiredId,
+          ],
+          category: option.category,
+          message:
+            "Selected option is missing a required semantic option.",
+        });
+      }
+    }
+  }
+
   return {
     validSelections:
       selected.filter((selection) =>

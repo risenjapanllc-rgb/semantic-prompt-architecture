@@ -40,6 +40,23 @@ const options: SpaOption[] = [
     label: "無表情",
     semanticValue: "expressionless",
   },
+  {
+    id: "face-visible",
+    domain: "visual_character",
+    category: "visibility",
+    label: "顔が見える",
+    semanticValue: "face_visible",
+  },
+  {
+    id: "tears-visible",
+    domain: "visual_character",
+    category: "expression_detail",
+    label: "涙が見える",
+    semanticValue: "tears_visible",
+    requires: [
+      "face-visible",
+    ],
+  },
 ];
 
 test("selected semantic option becomes Semantic State value", () => {
@@ -181,3 +198,107 @@ test("incompatible semantic selections create issue", () => {
     true
   );
 });
+
+test("missing required semantic option creates issue", () => {
+  const selections: SpaSelection[] = [
+    {
+      optionId: "tears-visible",
+      selected: true,
+    },
+  ];
+
+  const result =
+    resolveSelections(
+      options,
+      selections
+    );
+
+  assert.equal(
+    result.requiresConfirmation,
+    true
+  );
+
+  assert.equal(
+    result.issues.some(
+      (issue) =>
+        issue.type ===
+        "missing_requirement"
+    ),
+    true
+  );
+});
+
+test("required semantic option allows selection to resolve", () => {
+  const selections: SpaSelection[] = [
+    {
+      optionId: "face-visible",
+      selected: true,
+    },
+    {
+      optionId: "tears-visible",
+      selected: true,
+    },
+  ];
+
+  const result =
+    resolveSelections(
+      options,
+      selections
+    );
+
+  assert.equal(
+    result.requiresConfirmation,
+    false
+  );
+
+  assert.equal(
+    result.issues.length,
+    0
+  );
+});
+
+test("Unknown is preserved explicitly in Semantic State", () => {
+  const selections: SpaSelection[] = [
+    {
+      optionId:
+        "character-impression-refined",
+      selected: true,
+    },
+  ];
+
+  const result =
+    resolveSelections(
+      options,
+      selections
+    );
+
+  const state =
+    buildSemanticState(
+      "visual_character",
+      options,
+      result.validSelections,
+      [
+        {
+          field: "exact_eye_shape",
+          reason: "not_remembered",
+        },
+      ]
+    );
+
+  assert.deepEqual(
+    state.unknowns,
+    [
+      {
+        field: "exact_eye_shape",
+        reason: "not_remembered",
+      },
+    ]
+  );
+
+  assert.equal(
+    state.values.character_impression
+      .includes("refined"),
+    true
+  );
+});
+
