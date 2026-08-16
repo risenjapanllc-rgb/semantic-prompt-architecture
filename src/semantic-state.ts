@@ -3,11 +3,11 @@ import type {
   SemanticUnknown,
   SpaOption,
   SpaSelection,
-} from "./types";
+} from "./types.js";
 
 import {
   buildOptionMap,
-} from "./selection-resolver";
+} from "./selection-resolver.js";
 
 export function buildSemanticState(
   domain: string,

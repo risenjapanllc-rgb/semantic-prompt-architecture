@@ -2,7 +2,7 @@ import type {
   SpaOption,
   SpaSelection,
   SelectionResolutionResult,
-} from "./types";
+} from "./types.js";
 
 export function buildOptionMap(
   options: SpaOption[]

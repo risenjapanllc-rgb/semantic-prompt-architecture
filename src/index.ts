@@ -1,3 +1,3 @@
-export * from "./types";
-export * from "./selection-resolver";
-export * from "./semantic-state";
+export * from "./types.js";
+export * from "./selection-resolver.js";
+export * from "./semantic-state.js";
