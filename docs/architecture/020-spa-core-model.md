@@ -71,3 +71,35 @@ export type SpaOption = {
 Neither field contains model-specific prompt instructions.
 
 The same semantic value may later be translated differently for different AI models.
+
+---
+
+## Selection
+
+A Selection records a user's explicit choice of an Option.
+
+```ts
+export type SpaSelection = {
+  optionId: string;
+  selected: boolean;
+};
+```
+
+### Example
+
+```ts
+{
+  optionId: "face-impression-refined",
+  selected: true
+}
+```
+
+A Selection records the user's choice.
+
+It does not contain prompt text and does not reinterpret the meaning of the selected Option.
+
+Option defines meaning.
+
+Selection records choice.
+
+The selected Options are later used to construct Semantic State.
